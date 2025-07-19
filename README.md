@@ -1,8 +1,8 @@
 # TemplateProject
 
-!Python Version
-!License
-!Built with ttkbootstrap
+![Python Versions](https://img.shields.io/badge/python-3.9--3.12-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Built with ttkbootstrap](https://img.shields.io/badge/ttkbootstrap-%F0%9F%92%BB-blue)
 
 A GUI-based Python project generator for quickly creating new applications with a modern look and feel, powered by `ttkbootstrap`.
 
