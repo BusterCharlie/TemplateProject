@@ -1,0 +1,25 @@
+import ttkbootstrap as ttkb
+
+
+class HomeTab(ttkb.Frame):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.create_widgets()
+
+    def create_widgets(self):
+        label = ttkb.Label(
+            self,
+            text="Welcome to your new Application!",
+            font=("Helvetica", 16)
+        )
+        label.pack(pady=20, padx=20)
+
+        info_text = (
+            "This is the 'Home' tab. You can add your main application features here."
+        )
+        info_label = ttkb.Label(self, text=info_text, wraplength=400)
+        info_label.pack(pady=10, padx=20)
+
+        # Example button
+        button = ttkb.Button(self, text="Click Me!", bootstyle="success")
+        button.pack(pady=20)

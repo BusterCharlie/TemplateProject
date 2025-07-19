@@ -1,0 +1,63 @@
+import ttkbootstrap as ttkb
+
+from .config import ConfigManager
+from .gui.home_tab import HomeTab
+from .gui.settings_tab import SettingsTab
+
+
+class MainApplication(ttkb.Window):
+    def __init__(self, title, size):
+        # Load config first
+        self.config_manager = ConfigManager()
+        self.settings = self.config_manager.load_settings()
+
+        # Initialize window with theme from config
+        super().__init__(
+            title=title,
+            themename=self.settings.get("theme", "superhero"),  # Default to a dark theme
+            size=size,
+            minsize=(600, 400),
+        )
+
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
+        self.create_widgets()
+        self.set_icon()
+
+    def set_icon(self):
+        """Set the window icon if available."""
+        try:
+            import os
+            icon_path = os.path.join(os.path.dirname(__file__), "assets", "icon.ico")
+            if os.path.exists(icon_path):
+                self.iconbitmap(icon_path)
+        except Exception:
+            pass  # Icon loading failed, continue without icon
+
+    def create_widgets(self):
+        self.notebook = ttkb.Notebook(self)
+        self.notebook.pack(expand=True, fill="both", padx=10, pady=10)
+
+        # Create tabs
+        home_frame = HomeTab(self.notebook)
+        settings_frame = SettingsTab(self.notebook, self.settings, self.apply_settings)
+
+        # Add tabs to notebook
+        self.notebook.add(home_frame, text="Home")
+        self.notebook.add(settings_frame, text="Settings")
+
+    def apply_settings(self, new_settings):
+        """Apply new settings and update the theme."""
+        self.settings.update(new_settings)
+        theme_name = self.settings["theme"]
+        self.style.theme_use(theme_name)
+        print(f"Theme changed to: {theme_name}")
+
+    def on_closing(self):
+        """Handle window closing event."""
+        self.config_manager.save_settings(self.settings)
+        self.destroy()
+
+
+if __name__ == "__main__":
+    app = MainApplication(title="{project_name}", size=(800, 600))
+    app.mainloop()

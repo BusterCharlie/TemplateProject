@@ -1,0 +1,91 @@
+# {project_name}
+
+{project_desc}
+
+{author_section}
+
+## Features
+
+- Modern GUI with ttkbootstrap
+- Dark/Light theme support
+- Tabbed interface
+- Settings persistence
+- Development tools (Ruff linting)
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.9 or higher
+- uv (will be installed automatically if not present)
+
+### Running the Application
+
+#### Windows
+```bash
+run.bat
+```
+
+#### macOS/Linux
+```bash
+chmod +x run.sh
+./run.sh
+```
+
+### Manual Setup
+
+1. Create virtual environment:
+```bash
+uv venv
+```
+
+2. Install dependencies:
+```bash
+uv pip install -e .
+```
+
+3. Run the application:
+```bash
+uv run python src/{package_name}/main.py
+```
+
+## Development
+
+### Code Quality
+
+This project uses Ruff for linting and formatting:
+
+```bash
+# Check for issues
+ruff check .
+
+# Fix issues automatically
+ruff check . --fix
+
+# Format code
+ruff format .
+```
+
+### Project Structure
+
+```
+{project_name}/
++-- src/
+|   +-- {package_name}/
+|       +-- __init__.py
+|       +-- main.py
+|       +-- config.py
+|       +-- gui/
+|           +-- __init__.py
+|           +-- home_tab.py
+|           +-- settings_tab.py
++-- tests/
++-- pyproject.toml
++-- README.md
++-- run.bat
++-- run.sh
+```
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

@@ -1,0 +1,14 @@
+import sys
+import os
+
+# Add src directory to path for imports
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+
+
+def test_import():
+    """Test that the main module can be imported."""
+    import {package_name}
+    assert True
+
+
+# Add more tests here as you develop your application

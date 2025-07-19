@@ -1,0 +1,21 @@
+# Dev Folder
+
+This folder is excluded from version control and is intended for:
+
+- **Testing files**: Temporary test scripts and data files
+- **Experiments**: Code experiments and prototypes
+- **Sandbox**: Files for trying out new features
+- **Local development**: Developer-specific files and configurations
+
+## Usage
+
+Feel free to create any files or folders here without worrying about cluttering the main project structure. Everything in this folder is automatically ignored by git.
+
+## Common use cases:
+
+- `test_script.py` - Quick testing scripts
+- `sample_data/` - Test data files
+- `experiments/` - Feature prototypes
+- `notes.md` - Development notes and TODOs
+
+This folder helps maintain a clean project structure while providing space for development work.
