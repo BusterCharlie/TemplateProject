@@ -33,15 +33,30 @@ class ProjectGenerator:
             git_init: Whether to initialize a git repository
             **kwargs: Additional template variables (features, project_type, etc.)
         """
-        package_name = project_name.replace('-', '_')
+
+
+        # Helper to sanitize project name to snake_case (for all technical uses)
+        def to_snake_case(name):
+            import re
+            name = name.strip().lower()
+            name = re.sub(r'[^a-z0-9]+', '_', name)
+            name = re.sub(r'_+', '_', name)
+            name = name.strip('_')
+            return name
+
+        # Expose the sanitizer for GUI live feedback
+        self.sanitize_project_name = staticmethod(to_snake_case)
+
+        sanitized_name = to_snake_case(project_name)
 
         # Enhanced template context for Jinja2
         template_context = {
-            'project_name': project_name,
+            'project_name': project_name,  # User-entered, for display/docs
+            'sanitized_name': sanitized_name,  # For all technical uses
             'project_desc': project_desc,
             'python_version': python_version,
             'author_info': author_info or {},
-            'package_name': package_name,
+            'package_name': sanitized_name,  # Use sanitized_name everywhere
             'os_type': 'windows' if os.name == 'nt' else 'unix',
             'git_init': git_init,
             'has_icon': bool(icon_path),
@@ -50,9 +65,9 @@ class ProjectGenerator:
 
         # Create main directories
         os.makedirs(project_dir)
-        os.makedirs(os.path.join(project_dir, "src", package_name))
-        os.makedirs(os.path.join(project_dir, "src", package_name, "gui"))
-        os.makedirs(os.path.join(project_dir, "src", package_name, "assets"))
+        os.makedirs(os.path.join(project_dir, "src", sanitized_name))
+        os.makedirs(os.path.join(project_dir, "src", sanitized_name, "gui"))
+        os.makedirs(os.path.join(project_dir, "src", sanitized_name, "assets"))
         os.makedirs(os.path.join(project_dir, "tests"))
         os.makedirs(os.path.join(project_dir, ".github"))
         # Create dev folder for temporary/testing files (excluded from git)
@@ -69,7 +84,7 @@ class ProjectGenerator:
 
         # Copy and convert icon if provided
         if icon_path:
-            self._process_icon(icon_path, project_dir, package_name)
+            self._process_icon(icon_path, project_dir, sanitized_name)
 
         # Generate all project files with enhanced context
         self._generate_pyproject_toml(project_dir, template_context)
@@ -87,7 +102,9 @@ class ProjectGenerator:
     def _process_icon(self, icon_path, project_dir, package_name):
         """Process and copy the icon file."""
         icon_filename = "icon.ico"
-        dest_path = os.path.join(project_dir, "src", package_name, "assets", icon_filename)
+        dest_path = os.path.join(
+            project_dir, "src", package_name, "assets", icon_filename
+        )
         ext = os.path.splitext(icon_path)[1].lower()
 
         if ext == ".ico":
@@ -174,10 +191,14 @@ class ProjectGenerator:
         package_name = template_context['package_name']
 
         # Create __init__.py files
-        with open(os.path.join(project_dir, "src", package_name, "__init__.py"), "w") as f:
+        with open(
+            os.path.join(project_dir, "src", package_name, "__init__.py"), "w"
+        ) as f:
             f.write("")
 
-        with open(os.path.join(project_dir, "src", package_name, "gui", "__init__.py"), "w") as f:
+        with open(
+            os.path.join(project_dir, "src", package_name, "gui", "__init__.py"), "w"
+        ) as f:
             f.write("")
 
         # Create config.py
@@ -193,7 +214,9 @@ class ProjectGenerator:
             'main.py.template',
             **template_context
         )
-        with open(os.path.join(project_dir, "src", package_name, "main.py"), "w") as f:
+        with open(
+            os.path.join(project_dir, "src", package_name, "main.py"), "w"
+        ) as f:
             f.write(main_content)
 
         # Create __main__.py for module execution
@@ -201,7 +224,9 @@ class ProjectGenerator:
             '__main__.py.template',
             **template_context
         )
-        with open(os.path.join(project_dir, "src", package_name, "__main__.py"), "w") as f:
+        with open(
+            os.path.join(project_dir, "src", package_name, "__main__.py"), "w"
+        ) as f:
             f.write(main_module_content)
 
         # Create home_tab.py
@@ -209,7 +234,9 @@ class ProjectGenerator:
             'home_tab.py.template',
             **template_context
         )
-        with open(os.path.join(project_dir, "src", package_name, "gui", "home_tab.py"), "w") as f:
+        with open(
+            os.path.join(project_dir, "src", package_name, "gui", "home_tab.py"), "w"
+        ) as f:
             f.write(home_tab_content)
 
         # Create settings_tab.py
@@ -217,7 +244,9 @@ class ProjectGenerator:
             'settings_tab.py.template',
             **template_context
         )
-        with open(os.path.join(project_dir, "src", package_name, "gui", "settings_tab.py"), "w") as f:
+        with open(
+            os.path.join(project_dir, "src", package_name, "gui", "settings_tab.py"), "w"
+        ) as f:
             f.write(settings_tab_content)
 
         # Create basic test file

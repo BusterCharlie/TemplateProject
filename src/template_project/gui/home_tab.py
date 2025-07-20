@@ -42,10 +42,28 @@ class HomeTab(ttkb.Frame):
         name_frame = ttkb.Frame(self.container)
         name_frame.pack(fill="x", pady=(10, 5))
         ttkb.Label(name_frame, text="Project Name:", font=("Helvetica", 12)).pack(anchor="w")
+
         self.project_name_var = tk.StringVar()
         self.project_name_entry = ttkb.Entry(name_frame, textvariable=self.project_name_var, font=("Helvetica", 11))
         self.project_name_entry.pack(fill="x", pady=(5, 0))
-        self.project_name_var.trace_add("write", lambda *a: self.save_config())
+
+        # Label to show the sanitized project name
+        self.sanitized_name_var = tk.StringVar()
+        self.sanitized_name_label = ttkb.Label(
+            name_frame,
+            textvariable=self.sanitized_name_var,
+            font=("Helvetica", 9, "italic"),
+            foreground="#888"
+        )
+        self.sanitized_name_label.pack(anchor="w", pady=(2, 0))
+
+        def update_sanitized_name(*_):
+            raw = self.project_name_var.get()
+            sanitized = self.project_generator.sanitize_project_name(raw)
+            self.sanitized_name_var.set(f"Sanitized project name: {sanitized}")
+
+        self.project_name_var.trace_add("write", lambda *a: (self.save_config(), update_sanitized_name()))
+        update_sanitized_name()
 
         # Project Description
         desc_frame = ttkb.Frame(self.container)
