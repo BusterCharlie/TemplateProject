@@ -100,9 +100,9 @@ ruff format .
 ### Project Structure
 
 ```
-{project_name}/
+{{ project_name|kebab_case }}/
 +-- src/
-|   +-- {package_name}/
+|   +-- {{ package_name }}/
 |       +-- __init__.py
 |       +-- main.py
 |       +-- config.py

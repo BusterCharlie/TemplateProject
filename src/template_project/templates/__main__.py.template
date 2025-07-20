@@ -1,5 +1,5 @@
 from .main import MainApplication
 
 if __name__ == "__main__":
-    app = MainApplication(title="{project_name}", size=(800, 600))
+    app = MainApplication(title="{{ project_name|title_case }}", size=(800, 600))
     app.mainloop()

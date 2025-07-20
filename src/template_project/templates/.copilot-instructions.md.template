@@ -41,7 +41,7 @@ This project follows specific coding standards and patterns. Please adhere to th
 - Use module-based logger names
 
 ### Project Structure
-- Keep source code in `src/{package_name}/`
+- Keep source code in `src/{{ package_name }}/`
 - Use `dev/` folder for temporary and testing files
 - Follow the established package structure
 
