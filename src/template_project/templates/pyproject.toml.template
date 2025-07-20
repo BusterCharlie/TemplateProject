@@ -3,7 +3,7 @@ name = "{{ project_name|kebab_case }}"
 version = "0.1.0"
 description = "{{ project_desc }}"
 authors = [
-    { name = "{{ author_info.name or 'Your Name' }}", email = "{{ author_info.email or 'your@email.com' }}" }
+    { name = "{{ author_info.name or 'Your Name' }}", email = "{{ (author_info.email or 'your@email.com')|trim }}" }
 ]
 requires-python = ">={{ python_version }}"
 dependencies = [
@@ -12,10 +12,10 @@ dependencies = [
 
 {% if author_info.github -%}
 [project.urls]
-Homepage = "{{ author_info.github }}"
-Repository = "{{ author_info.github }}"
+Homepage = "{{ author_info.github.rstrip('/') }}"
+Repository = "{{ author_info.github.rstrip('/') }}"
 {% if author_info.github.startswith('https://github.com/') -%}
-Issues = "{{ author_info.github }}/issues"
+Issues = "{{ author_info.github.rstrip('/') }}/issues"
 {% endif -%}
 {% endif %}
 
