@@ -231,11 +231,12 @@ class HomeTab(ttkb.Frame):
             messagebox.showerror("Error", "Icon file does not exist")
             return
 
-        # Create project directory
-        project_dir = os.path.join(output_dir, project_name)
+        # Use sanitized name for the top-level project directory
+        sanitized_name = ProjectGenerator.sanitize_project_name(project_name)
+        project_dir = os.path.join(output_dir, sanitized_name)
         if os.path.exists(project_dir):
             if not messagebox.askyesno("Directory Exists",
-                                     f"Directory '{project_name}' already exists. Overwrite?"):
+                                     f"Directory '{sanitized_name}' already exists. Overwrite?"):
                 return
 
         try:

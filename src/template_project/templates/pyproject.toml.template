@@ -1,5 +1,5 @@
 [project]
-name = "{{ project_name|kebab_case }}"
+name = "{{ sanitized_name|replace('_', '-') }}"
 version = "0.1.0"
 description = "{{ project_desc }}"
 authors = [

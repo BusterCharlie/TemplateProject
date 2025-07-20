@@ -1,5 +1,5 @@
-
 import tkinter as tk
+from tkinter.constants import X
 
 import ttkbootstrap as ttkb
 from ttkbootstrap.constants import BOTH
