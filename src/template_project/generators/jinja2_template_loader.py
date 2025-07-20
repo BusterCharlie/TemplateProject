@@ -1,23 +1,22 @@
 """Jinja2-based template loader with enhanced features."""
 import os
-import re
 from datetime import datetime
 
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 
-class TemplateLoader:
+class Jinja2TemplateLoader:
     """Loads and processes template files using Jinja2."""
 
     def __init__(self, template_dir=None):
         if template_dir is None:
-            # Default to templates directory relative to this file
             template_dir = os.path.join(os.path.dirname(__file__), '..', 'templates')
         self.template_dir = os.path.abspath(template_dir)
 
         # Configure Jinja2 environment
         self.env = Environment(
             loader=FileSystemLoader(self.template_dir),
+            autoescape=select_autoescape(['html', 'xml']),
             trim_blocks=True,
             lstrip_blocks=True,
             keep_trailing_newline=True
@@ -27,7 +26,8 @@ class TemplateLoader:
         self.env.filters['snake_case'] = self._to_snake_case
         self.env.filters['kebab_case'] = self._to_kebab_case
         self.env.filters['title_case'] = self._to_title_case
-        self.env.filters['class_name'] = self._to_class_name
+        self.env.filters['camel_case'] = self._to_camel_case
+        self.env.filters['pascal_case'] = self._to_pascal_case
 
         # Add global functions
         self.env.globals['now'] = datetime.now
@@ -37,18 +37,17 @@ class TemplateLoader:
         """Load and render a template with variables.
 
         Args:
-            filename: Name of the template file (e.g., 'README.md.template')
+            filename: Name of the template file (e.g., 'README.md.j2')
             **kwargs: Variables to substitute in the template
 
         Returns:
             str: Processed template content with variables substituted
         """
-        import logging
         try:
             template = self.env.get_template(filename)
             return template.render(**kwargs)
         except Exception as e:
-            logging.error(f"Error loading template {filename}: {e}")
+            print(f"Error loading template {filename}: {e}")
             return ""
 
     def list_templates(self):
@@ -61,41 +60,41 @@ class TemplateLoader:
             return []
 
         return [f for f in os.listdir(self.template_dir)
-                if f.endswith('.template')]
+                if f.endswith('.j2') or f.endswith('.template')]
 
     def _to_snake_case(self, text):
         """Convert text to snake_case."""
-        if not text:
-            return ""
-        # Replace spaces and hyphens with underscores, then convert to lowercase
-        text = re.sub(r'[-\s]+', '_', text)
-        # Insert underscore before uppercase letters (except at start)
-        text = re.sub(r'(?<!^)(?=[A-Z])', '_', text)
+        import re
+        # Replace hyphens and spaces with underscores
+        text = text.replace('-', '_').replace(' ', '_')
+        # Insert underscore before uppercase letters (for CamelCase)
+        text = re.sub('([a-z0-9])([A-Z])', r'\1_\2', text)
         return text.lower()
 
     def _to_kebab_case(self, text):
         """Convert text to kebab-case."""
-        if not text:
-            return ""
-        # Replace spaces and underscores with hyphens, then convert to lowercase
-        text = re.sub(r'[_\s]+', '-', text)
-        # Insert hyphen before uppercase letters (except at start)
-        text = re.sub(r'(?<!^)(?=[A-Z])', '-', text)
+        import re
+        # Replace underscores and spaces with hyphens
+        text = text.replace('_', '-').replace(' ', '-')
+        # Insert hyphen before uppercase letters (for CamelCase)
+        text = re.sub('([a-z0-9])([A-Z])', r'\1-\2', text)
         return text.lower()
 
     def _to_title_case(self, text):
         """Convert text to Title Case."""
-        if not text:
-            return ""
-        # Replace hyphens and underscores with spaces
-        text = re.sub(r'[-_]+', ' ', text)
-        return text.title()
+        return text.replace('-', ' ').replace('_', ' ').title()
 
-    def _to_class_name(self, text):
-        """Convert text to ClassName (PascalCase)."""
-        if not text:
-            return ""
-        # Replace hyphens, underscores, and spaces
-        text = re.sub(r'[-_\s]+', ' ', text)
-        # Convert to title case and remove spaces
-        return ''.join(word.capitalize() for word in text.split())
+    def _to_camel_case(self, text):
+        """Convert text to camelCase."""
+        # Split on common separators
+        words = text.replace('-', ' ').replace('_', ' ').split()
+        if not words:
+            return text
+        # First word lowercase, rest title case
+        return words[0].lower() + ''.join(word.capitalize() for word in words[1:])
+
+    def _to_pascal_case(self, text):
+        """Convert text to PascalCase."""
+        # Split on common separators and capitalize each word
+        words = text.replace('-', ' ').replace('_', ' ').split()
+        return ''.join(word.capitalize() for word in words)

@@ -1,13 +1,15 @@
 [project]
 name = "TemplateProject"
-version = "0.1.0"
-description = "A Template project for python apps"
+version = "0.1.1"
+description = "A Template project for python apps with Jinja2 templating"
 authors = [
     { name = "Gemini Code Assist", email = "your@email.com" },
 ]
 requires-python = ">=3.9"
 dependencies = [
     "ttkbootstrap>=1.10.1",
+    "jinja2>=3.1.0",
+    "Pillow>=9.0.0",
 ]
 
 [project.optional-dependencies]

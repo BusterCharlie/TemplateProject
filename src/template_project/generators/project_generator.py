@@ -3,7 +3,6 @@ import logging
 import os
 import shutil
 import subprocess
-from datetime import datetime
 
 from PIL import Image
 
@@ -21,7 +20,7 @@ class ProjectGenerator:
 
     def create_project_structure(self, project_dir, project_name, project_desc,
                                icon_path=None, author_info=None, python_version="3.9",
-                               git_init=True):
+                               git_init=True, **kwargs):
         """Create the complete project structure.
 
         Args:
@@ -32,8 +31,22 @@ class ProjectGenerator:
             author_info: Dictionary with author information
             python_version: Python version requirement
             git_init: Whether to initialize a git repository
+            **kwargs: Additional template variables (features, project_type, etc.)
         """
         package_name = project_name.replace('-', '_')
+
+        # Enhanced template context for Jinja2
+        template_context = {
+            'project_name': project_name,
+            'project_desc': project_desc,
+            'python_version': python_version,
+            'author_info': author_info or {},
+            'package_name': package_name,
+            'os_type': 'windows' if os.name == 'nt' else 'unix',
+            'git_init': git_init,
+            'has_icon': bool(icon_path),
+            **kwargs  # Include any additional template variables
+        }
 
         # Create main directories
         os.makedirs(project_dir)
@@ -46,7 +59,10 @@ class ProjectGenerator:
         os.makedirs(os.path.join(project_dir, "dev"))
 
         # Create dev folder README
-        dev_readme_content = self.template_loader.load_template('dev_readme.md.template')
+        dev_readme_content = self.template_loader.load_template(
+            'dev_readme.md.template',
+            **template_context
+        )
         dev_readme_path = os.path.join(project_dir, "dev", "README.md")
         with open(dev_readme_path, "w", encoding="utf-8") as f:
             f.write(dev_readme_content)
@@ -55,16 +71,14 @@ class ProjectGenerator:
         if icon_path:
             self._process_icon(icon_path, project_dir, package_name)
 
-        # Generate all project files
-        self._generate_pyproject_toml(project_dir, project_name, project_desc,
-                                    author_info, python_version)
-        self._generate_readme(project_dir, project_name, project_desc,
-                            author_info, package_name)
-        self._generate_gitignore(project_dir)
-        self._generate_license(project_dir, author_info)
-        self._generate_run_scripts(project_dir, project_name, package_name)
-        self._generate_source_files(project_dir, project_name, package_name)
-        self._generate_copilot_instructions(project_dir)
+        # Generate all project files with enhanced context
+        self._generate_pyproject_toml(project_dir, template_context)
+        self._generate_readme(project_dir, template_context)
+        self._generate_gitignore(project_dir, template_context)
+        self._generate_license(project_dir, template_context)
+        self._generate_run_scripts(project_dir, template_context)
+        self._generate_source_files(project_dir, template_context)
+        self._generate_copilot_instructions(project_dir, template_context)
 
         # Initialize git repository if requested
         if git_init:
@@ -97,81 +111,52 @@ class ProjectGenerator:
                 img = img.resize((256, 256))
             img.save(dest_path, format="ICO")
 
-    def _generate_pyproject_toml(self, project_dir, project_name, project_desc,
-                               author_info, python_version):
+    def _generate_pyproject_toml(self, project_dir, template_context):
         """Generate pyproject.toml file."""
-        author_name = (author_info.get("name") if author_info and
-                      author_info.get("name") else "Your Name")
-        author_email = (author_info.get("email") if author_info and
-                       author_info.get("email") else "your@email.com")
-        authors_block = f'{{ name = "{author_name}", email = "{author_email}" }}'
-
         content = self.template_loader.load_template(
             'pyproject.toml.template',
-            project_name=project_name,
-            project_desc=project_desc,
-            authors_block=authors_block,
-            python_version=python_version
+            **template_context
         )
 
         pyproject_path = os.path.join(project_dir, "pyproject.toml")
         with open(pyproject_path, "w", encoding="utf-8") as f:
             f.write(content)
 
-    def _generate_readme(self, project_dir, project_name, project_desc,
-                        author_info, package_name):
+    def _generate_readme(self, project_dir, template_context):
         """Generate README.md file."""
-        author_name = author_info.get("name") if author_info and author_info.get("name") else "Your Name"
-        github = author_info.get("github") if author_info and author_info.get("github") else ""
-        email = author_info.get("email") if author_info and author_info.get("email") else "your@email.com"
-        website = author_info.get("website") if author_info and author_info.get("website") else ""
-
-        author_section = f"**Author:** {author_name}\\n"
-        if email:
-            author_section += f"**Email:** {email}\\n"
-        if github:
-            author_section += f"**GitHub:** {github}\\n"
-        if website:
-            author_section += f"**Website:** {website}\\n"
-
         content = self.template_loader.load_template(
             'README.md.template',
-            project_name=project_name,
-            project_desc=project_desc,
-            author_section=author_section,
-            package_name=package_name
+            **template_context
         )
 
         with open(os.path.join(project_dir, "README.md"), "w") as f:
             f.write(content)
 
-    def _generate_gitignore(self, project_dir):
+    def _generate_gitignore(self, project_dir, template_context):
         """Generate .gitignore file."""
-        content = self.template_loader.load_template('.gitignore.template')
+        content = self.template_loader.load_template(
+            '.gitignore.template',
+            **template_context
+        )
         with open(os.path.join(project_dir, ".gitignore"), "w") as f:
             f.write(content)
 
-    def _generate_license(self, project_dir, author_info):
+    def _generate_license(self, project_dir, template_context):
         """Generate LICENSE file."""
-        year = datetime.now().year
-        author_name = author_info.get("name") if author_info and author_info.get("name") else "Your Name"
-
         content = self.template_loader.load_template(
             'LICENSE.template',
-            year=year,
-            author_name=author_name
+            **template_context
         )
 
         with open(os.path.join(project_dir, "LICENSE"), "w") as f:
             f.write(content)
 
-    def _generate_run_scripts(self, project_dir, project_name, package_name):
+    def _generate_run_scripts(self, project_dir, template_context):
         """Generate run.bat and run.sh scripts."""
         # Windows batch script
         bat_content = self.template_loader.load_template(
             'run.bat.template',
-            project_name=project_name,
-            package_name=package_name
+            **template_context
         )
         with open(os.path.join(project_dir, "run.bat"), "w") as f:
             f.write(bat_content)
@@ -179,13 +164,15 @@ class ProjectGenerator:
         # Unix shell script
         sh_content = self.template_loader.load_template(
             'run.sh.template',
-            package_name=package_name
+            **template_context
         )
         with open(os.path.join(project_dir, "run.sh"), "w") as f:
             f.write(sh_content)
 
-    def _generate_source_files(self, project_dir, project_name, package_name):
-        """Generate source files for the project."""
+    def _generate_source_files(self, project_dir, template_context):
+        """Generate all source files."""
+        package_name = template_context['package_name']
+
         # Create __init__.py files
         with open(os.path.join(project_dir, "src", package_name, "__init__.py"), "w") as f:
             f.write("")
@@ -194,14 +181,17 @@ class ProjectGenerator:
             f.write("")
 
         # Create config.py
-        config_content = self.template_loader.load_template('config.py.template')
+        config_content = self.template_loader.load_template(
+            'config.py.template',
+            **template_context
+        )
         with open(os.path.join(project_dir, "src", package_name, "config.py"), "w") as f:
             f.write(config_content)
 
         # Create main.py
         main_content = self.template_loader.load_template(
             'main.py.template',
-            project_name=project_name
+            **template_context
         )
         with open(os.path.join(project_dir, "src", package_name, "main.py"), "w") as f:
             f.write(main_content)
@@ -209,35 +199,44 @@ class ProjectGenerator:
         # Create __main__.py for module execution
         main_module_content = self.template_loader.load_template(
             '__main__.py.template',
-            project_name=project_name
+            **template_context
         )
         with open(os.path.join(project_dir, "src", package_name, "__main__.py"), "w") as f:
             f.write(main_module_content)
 
         # Create home_tab.py
-        home_tab_content = self.template_loader.load_template('home_tab.py.template')
+        home_tab_content = self.template_loader.load_template(
+            'home_tab.py.template',
+            **template_context
+        )
         with open(os.path.join(project_dir, "src", package_name, "gui", "home_tab.py"), "w") as f:
             f.write(home_tab_content)
 
         # Create settings_tab.py
-        settings_tab_content = self.template_loader.load_template('settings_tab.py.template')
+        settings_tab_content = self.template_loader.load_template(
+            'settings_tab.py.template',
+            **template_context
+        )
         with open(os.path.join(project_dir, "src", package_name, "gui", "settings_tab.py"), "w") as f:
             f.write(settings_tab_content)
 
         # Create basic test file
         test_content = self.template_loader.load_template(
             'test_main.py.template',
-            package_name=package_name
+            **template_context
         )
         with open(os.path.join(project_dir, "tests", "test_main.py"), "w") as f:
             f.write(test_content)
 
-    def _generate_copilot_instructions(self, project_dir):
+    def _generate_copilot_instructions(self, project_dir, template_context):
         """Generate GitHub Copilot instructions file in .github folder."""
         copilot_content = self.template_loader.load_template(
-            '.copilot-instructions.md.template'
+            '.copilot-instructions.md.template',
+            **template_context
         )
-        copilot_file_path = os.path.join(project_dir, ".github", ".copilot-instructions.md")
+        copilot_file_path = os.path.join(
+            project_dir, ".github", ".copilot-instructions.md"
+        )
         with open(copilot_file_path, "w", encoding="utf-8") as f:
             f.write(copilot_content)
 

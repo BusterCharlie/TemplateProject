@@ -1,8 +1,23 @@
-# {project_name}
+# {{ project_name|title_case }}
 
-{project_desc}
+{{ project_desc }}
 
-{author_section}
+## Author
+
+{% if author_info.name -%}
+**{{ author_info.name }}**
+{% else -%}
+**Your Name**
+{% endif %}
+{% if author_info.email -%}
+- Email: {{ author_info.email }}
+{% endif -%}
+{% if author_info.github -%}
+- GitHub: {{ author_info.github }}
+{% endif -%}
+{% if author_info.website -%}
+- Website: {{ author_info.website }}
+{% endif %}
 
 ## Features
 
@@ -11,16 +26,20 @@
 - Tabbed interface
 - Settings persistence
 - Development tools (Ruff linting)
+{% if has_icon -%}
+- Custom application icon
+{% endif %}
 
 ## Getting Started
 
 ### Prerequisites
 
-- Python 3.9 or higher
+- Python {{ python_version }} or higher
 - uv (will be installed automatically if not present)
 
 ### Running the Application
 
+{% if os_type == 'windows' -%}
 #### Windows
 ```bash
 run.bat
@@ -31,6 +50,18 @@ run.bat
 chmod +x run.sh
 ./run.sh
 ```
+{% else -%}
+#### macOS/Linux
+```bash
+chmod +x run.sh
+./run.sh
+```
+
+#### Windows
+```bash
+run.bat
+```
+{% endif %}
 
 ### Manual Setup
 
@@ -46,7 +77,7 @@ uv pip install -e .
 
 3. Run the application:
 ```bash
-uv run python src/{package_name}/main.py
+uv run python src/{{ package_name }}/main.py
 ```
 
 ## Development

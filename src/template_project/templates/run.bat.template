@@ -4,10 +4,10 @@ setlocal
 REM ===================== DEBUG PAUSE OPTION =====================
 REM Set DEBUG_PAUSE to 1 to keep the console open after the script finishes.
 REM This is useful for debugging errors. Default is 1 (pause enabled).
-set "DEBUG_PAUSE=1"
+set "DEBUG_PAUSE=0"
 REM =============================================================
 
-echo Starting {project_name}...
+echo Starting {{ project_name|title_case }}...
 echo Current directory: %cd%
 
 REM This script sets up a Python virtual environment, installs dependencies,
@@ -145,9 +145,9 @@ echo Dependencies installed successfully.
 
 REM Run the application
 echo Starting the application...
-echo Running: uv run python -m {package_name}
+echo Running: uv run python -m {{ package_name }}
 echo The GUI window should open now. Close this window after closing the GUI.
-uv run python -m {package_name}
+uv run python -m {{ package_name }}
 if %errorlevel% neq 0 (
     echo Failed to run application with error code: %errorlevel%
     if "%DEBUG_PAUSE%"=="1" pause

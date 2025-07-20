@@ -1,3 +1,4 @@
+"""{{ project_name|title_case }} - {{ project_desc }}"""
 import ttkbootstrap as ttkb
 
 from .config import ConfigManager
@@ -6,6 +7,8 @@ from .gui.settings_tab import SettingsTab
 
 
 class MainApplication(ttkb.Window):
+    """Main application window for {{ project_name|title_case }}."""
+
     def __init__(self, title, size):
         # Load config first
         self.config_manager = ConfigManager()
@@ -25,13 +28,16 @@ class MainApplication(ttkb.Window):
 
     def set_icon(self):
         """Set the window icon if available."""
-        try:
+{% if has_icon %}        try:
             import os
             icon_path = os.path.join(os.path.dirname(__file__), "assets", "icon.ico")
             if os.path.exists(icon_path):
                 self.iconbitmap(icon_path)
         except Exception:
             pass  # Icon loading failed, continue without icon
+{% else %}        # No icon configured for this project
+        pass
+{% endif %}
 
     def create_widgets(self):
         self.notebook = ttkb.Notebook(self)
@@ -59,5 +65,5 @@ class MainApplication(ttkb.Window):
 
 
 if __name__ == "__main__":
-    app = MainApplication(title="{project_name}", size=(800, 600))
+    app = MainApplication(title="{{ project_name|title_case }}", size=(800, 600))
     app.mainloop()

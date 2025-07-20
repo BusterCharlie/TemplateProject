@@ -70,7 +70,10 @@ venv.bak/
 *.log
 config.json
 uv.lock
-REFACTORING_SUMMARY.md
-test_*.py
-test_*.bat
+
+# Development files (but keep dev/README.md)
+dev/*
+!dev/README.md
+!dev/test_*.py
+
 *.pyc

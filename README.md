@@ -90,6 +90,28 @@ Your new project is created with a clean, ready-to-use structure. It includes a 
 -   An active internet connection is required for the first run to download the necessary dependencies.
 -   The provided `run` scripts handle the automatic installation of `uv` and other packages into a local virtual environment.
 
+## Project Structure
+
+```
+TemplateProject/
+├── src/template_project/     # Main application source
+│   ├── generators/           # Template processing and project generation
+│   ├── gui/                 # User interface components
+│   └── templates/           # Jinja2 templates for generated projects
+├── docs/                    # Project documentation and implementation notes
+│   ├── README.md           # Documentation index
+│   └── *.md                # Implementation summaries and history
+├── dev/                     # Development and testing files
+│   ├── README.md           # Development folder documentation
+│   └── test_*.py           # Test scripts (excluded from distribution)
+├── run.bat / run.sh        # Cross-platform startup scripts
+└── pyproject.toml          # Project configuration
+```
+
+The project follows standard Python project organization:
+- `docs/` - Implementation documentation and project history
+- `dev/` - Development utilities and tests (excluded from distribution)
+
 ## Contributing
 
 Contributions are welcome! Please see the CONTRIBUTING.md file for guidelines on how to contribute to this project.

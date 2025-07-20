@@ -1,14 +1,23 @@
 [project]
-name = "{project_name}"
+name = "{{ project_name|kebab_case }}"
 version = "0.1.0"
-description = "{project_desc}"
+description = "{{ project_desc }}"
 authors = [
-    {authors_block}
+    { name = "{{ author_info.name or 'Your Name' }}", email = "{{ author_info.email or 'your@email.com' }}" }
 ]
-requires-python = ">={python_version}"
+requires-python = ">={{ python_version }}"
 dependencies = [
     "ttkbootstrap>=1.10.1",
 ]
+
+{% if author_info.github -%}
+[project.urls]
+Homepage = "{{ author_info.github }}"
+Repository = "{{ author_info.github }}"
+{% if author_info.github.startswith('https://github.com/') -%}
+Issues = "{{ author_info.github }}/issues"
+{% endif -%}
+{% endif %}
 
 [project.optional-dependencies]
 dev = ["ruff", "pytest"]
