@@ -9,6 +9,11 @@ from ..utils import ConfigManager
 
 
 class HomeTab(ttkb.Frame):
+    def update_python_version_from_settings(self):
+        """Update the python_version_var and status label from self.settings."""
+        new_version = self.settings.get("python_version", "3.9")
+        self.python_version_var.set(new_version)
+        self.status_var.set(f"Ready to generate Python {new_version} project")
     def __init__(self, parent, settings, config_manager=None):
         super().__init__(parent)
         self.settings = settings

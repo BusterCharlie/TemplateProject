@@ -27,11 +27,11 @@ class MainApplication(ttkb.Window):
         self.notebook.pack(expand=True, fill="both", padx=10, pady=10)
 
         # Create tabs
-        home_frame = HomeTab(self.notebook, self.settings, config_manager=self.config_manager)
+        self.home_frame = HomeTab(self.notebook, self.settings, config_manager=self.config_manager)
         settings_frame = SettingsTab(self.notebook, self.settings, self.apply_settings)
 
         # Add tabs to notebook
-        self.notebook.add(home_frame, text="Project Generator")
+        self.notebook.add(self.home_frame, text="Project Generator")
         self.notebook.add(settings_frame, text="Settings")
 
     def apply_settings(self, new_settings):
@@ -40,6 +40,9 @@ class MainApplication(ttkb.Window):
         self.config_manager.save_config(self.settings)
         theme_name = self.settings["theme"]
         self.style.theme_use(theme_name)
+        # Update HomeTab's python version if present
+        if hasattr(self, "home_frame"):
+            self.home_frame.update_python_version_from_settings()
         # Re-render widgets if theme changes don't apply automatically
         print(f"Theme changed to: {theme_name}")
 
