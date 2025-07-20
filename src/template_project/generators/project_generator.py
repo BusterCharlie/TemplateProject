@@ -12,8 +12,24 @@ from .template_loader import TemplateLoader
 logger = logging.getLogger(__name__)
 
 
+
 class ProjectGenerator:
+
     """Handles generation of new Python projects from templates."""
+
+    @staticmethod
+    def sanitize_project_name(name):
+        import re
+        name = name.strip().lower()
+        # Remove apostrophes entirely
+        name = re.sub(r"'", '', name)
+        # Replace all other non-alphanum with _
+        name = re.sub(r'[^a-z0-9]+', '_', name)
+        name = re.sub(r'_+', '_', name)
+        name = name.strip('_')
+        return name
+
+
 
     def __init__(self):
         self.template_loader = TemplateLoader()
@@ -35,19 +51,8 @@ class ProjectGenerator:
         """
 
 
-        # Helper to sanitize project name to snake_case (for all technical uses)
-        def to_snake_case(name):
-            import re
-            name = name.strip().lower()
-            name = re.sub(r'[^a-z0-9]+', '_', name)
-            name = re.sub(r'_+', '_', name)
-            name = name.strip('_')
-            return name
-
-        # Expose the sanitizer for GUI live feedback
-        self.sanitize_project_name = staticmethod(to_snake_case)
-
-        sanitized_name = to_snake_case(project_name)
+        # Use the static sanitizer for all technical uses
+        sanitized_name = self.sanitize_project_name(project_name)
 
         # Enhanced template context for Jinja2
         template_context = {
@@ -206,7 +211,9 @@ class ProjectGenerator:
             'config.py.template',
             **template_context
         )
-        with open(os.path.join(project_dir, "src", package_name, "config.py"), "w") as f:
+        with open(
+            os.path.join(project_dir, "src", package_name, "config.py"), "w"
+        ) as f:
             f.write(config_content)
 
         # Create main.py
@@ -245,7 +252,9 @@ class ProjectGenerator:
             **template_context
         )
         with open(
-            os.path.join(project_dir, "src", package_name, "gui", "settings_tab.py"), "w"
+            os.path.join(
+                project_dir, "src", package_name, "gui", "settings_tab.py"
+            ), "w"
         ) as f:
             f.write(settings_tab_content)
 

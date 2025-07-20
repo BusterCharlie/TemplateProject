@@ -1,5 +1,4 @@
 import os
-import re
 import tkinter as tk
 from tkinter import filedialog, messagebox
 
@@ -59,7 +58,7 @@ class HomeTab(ttkb.Frame):
 
         def update_sanitized_name(*_):
             raw = self.project_name_var.get()
-            sanitized = self.project_generator.sanitize_project_name(raw)
+            sanitized = ProjectGenerator.sanitize_project_name(raw)
             self.sanitized_name_var.set(f"Sanitized project name: {sanitized}")
 
         self.project_name_var.trace_add("write", lambda *a: (self.save_config(), update_sanitized_name()))
@@ -192,15 +191,10 @@ class HomeTab(ttkb.Frame):
         self.icon_preview_label.configure(image=self.icon_image)
 
     def validate_project_name(self, name):
-        if not name:
+        if not name or not name.strip():
             return False, "Project name cannot be empty"
-
-        if not re.match(r'^[a-zA-Z][a-zA-Z0-9_-]*$', name):
-            return False, "Project name must start with a letter and contain only letters, numbers, hyphens, and underscores"
-
         if len(name) > 50:
             return False, "Project name must be 50 characters or less"
-
         return True, ""
 
     def generate_project(self):

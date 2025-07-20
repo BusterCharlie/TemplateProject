@@ -19,6 +19,8 @@ REQUIRED_VERSION="{{ python_version }}"
 if [[ $(echo "$PYTHON_VERSION $REQUIRED_VERSION" | awk '{print ($1 >= $2)}') == 0 ]]; then
     echo "ERROR: Python $REQUIRED_VERSION or higher is required. Found: $PYTHON_VERSION"
     echo "Please install Python $REQUIRED_VERSION or higher and try again."
+    echo
+    read -p "Press Enter to close this window..." _
     exit 1
 fi
 echo "Python version check passed: $PYTHON_VERSION"
